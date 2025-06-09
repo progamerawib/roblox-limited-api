@@ -18,7 +18,7 @@ app.get("/checkLimiteds/:userId", async (req, res) => {
         const response = await axios.get(url);
 
         const items = response.data.data.map(item => ({
-            name: item.assetName,
+            name: item.Item.Name,
             id: item.assetId,
             rap: item.recentAveragePrice,
             serial: item.serialNumber || null
