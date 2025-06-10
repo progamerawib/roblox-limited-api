@@ -6,6 +6,19 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors());
+const ROLIMONS_URL = "https://www.rolimons.com/itemapi/itemdetails";
+
+let rolimonsData = {};
+
+// Fetch Rolimons data once when server starts
+axios.get(ROLIMONS_URL)
+    .then(res => {
+        rolimonsData = res.data.items;
+        console.log("✅ Rolimons data loaded");
+    })
+    .catch(err => {
+        console.error("❌ Failed to fetch Rolimons data:", err.message);
+    });
 
 app.get("/", (req, res) => {
     res.send("Roblox Limited API is running!");
@@ -21,7 +34,10 @@ app.get("/checkLimiteds/:userId", async (req, res) => {
             name: item.name,
             id: item.assetId,
             rap: item.recentAveragePrice,
-            serial: item.serialNumber || null
+            serial: item.serialNumber || null,
+            value: itemInfo[3] || null, 
+            demand: itemInfo[4] || null,      
+            trend: itemInfo[5] || null,      
         }));
 
         res.json({ success: true, items });
