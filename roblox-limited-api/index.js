@@ -40,7 +40,7 @@ app.get("/checkLimiteds/:userId", async (req, res) => {
             const itemInfo = rolimonsData[item.assetId.toString()] || [];
 
             return {
-                name: item.assetName,
+                name: item.name,
                 id: item.assetId,
                 rap: item.recentAveragePrice,
                 serial: item.serialNumber || null,
