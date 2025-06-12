@@ -49,10 +49,7 @@ app.get("/checkLimiteds/:userId", async (req, res) => {
                 trend: itemInfo[5] || null    // Rolimons trend
             };
         });
-
-   const userRes = await axios.get(`https://users.roblox.com/v1/users/${userId}`);
-        const username = userRes.data.name;
-
+        
         res.json({ success: true, items });
     } catch (error) {
         res.status(500).json({ success: false, error: "Failed to fetch data." });
