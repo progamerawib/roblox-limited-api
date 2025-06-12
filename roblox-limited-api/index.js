@@ -11,19 +11,10 @@ const ROLIMONS_URL = "https://www.rolimons.com/itemapi/itemdetails";
 let rolimonsData = {};
 
 // Rolimons value mappings
-const demandMap = {
-  "-1": "N/A",
-  "1": "Low",
-  "2": "Medium",
-  "3": "High",
-  "4": "Extreme"
+const demandMap = ["Terrible", "Low", "Normal", "High", "Amazing"];
 };
 
-const trendMap = {
-  "-1": "N/A",
-  "1": "Down",
-  "2": "Stable",
-  "3": "Up"
+const trendMap = ["Lowering", "Stable", "Rising", "Fluctuating", "Projecting"];
 };
 
 // Fetch Rolimons data once when server starts
@@ -65,8 +56,8 @@ app.get("/checkLimiteds/:userId", async (req, res) => {
         rap: item.recentAveragePrice,
         serial: item.serialNumber || null,
         value: itemInfo[3] || -1,
-        demand: demandMap[rawDemand] || "N/A",
-        trend: trendMap[rawTrend] || "N/A",
+        demand: demandMap[itemInfo[4]] || "N/A",
+        trend: trendMap[itemInfo[5]] || "N/A",
         imageUrl: `https://www.roblox.com/asset-thumbnail/image?assetId=${item.assetId}&width=420&height=420&format=png`
       };
     });
