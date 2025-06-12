@@ -11,11 +11,13 @@ const ROLIMONS_URL = "https://www.rolimons.com/itemapi/itemdetails";
 let rolimonsData = {};
 
 // Rolimons value mappings
-const demandMap = ["Terrible", "Low", "Normal", "High", "Amazing"];
-};
+const items = response.data.data.map(item => {
+    const assetIdStr = item.assetId.toString();
+    const itemInfo = rolimonsData[assetIdStr] || [];
 
-const trendMap = ["Lowering", "Stable", "Rising", "Fluctuating", "Projecting"];
-};
+    // Declare maps inside the loop or outside (either works)
+    const demandMap = ["Terrible", "Low", "Normal", "High", "Amazing"];
+    const trendMap = ["Lowering", "Stable", "Rising", "Fluctuating", "Projecting"];
 
 // Fetch Rolimons data once when server starts
 axios.get(ROLIMONS_URL)
