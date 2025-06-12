@@ -1,7 +1,3 @@
-ChatGPT said:
-js
-Copy
-Edit
 const express = require("express");
 const axios = require("axios");
 const cors = require("cors");
@@ -52,13 +48,13 @@ app.get("/checkLimiteds/:userId", async (req, res) => {
                 rap:    item.recentAveragePrice,
                 serial: item.serialNumber || null,
                 value:  info[3] != null ? info[3] : null,
-                // Rolimons demand is at index 5
+                // demand at index 5
                 demand: info[5] != null
-                    ? demandMap[info[5]] 
+                    ? demandMap[info[5]]
                     : "N/A",
-                // Rolimons trend is at index 6
+                // trend at index 6
                 trend: info[6] != null
-                    ? trendMap[info[6]] 
+                    ? trendMap[info[6]]
                     : "N/A",
                 imageUrl: `https://www.roblox.com/asset-thumbnail/image?assetId=${item.assetId}&width=420&height=420&format=png`
             };
