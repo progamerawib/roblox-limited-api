@@ -27,7 +27,7 @@ app.get("/", (req, res) => {
 app.get("/checkLimiteds/:userId", async (req, res) => {
     const userId = req.params.userId;
 
-    // Optional: wait for Rolimons to be ready
+    // Ensure Rolimons data is ready
     if (Object.keys(rolimonsData).length === 0) {
         return res.status(503).json({ success: false, error: "Rolimons data not loaded yet." });
     }
@@ -37,7 +37,8 @@ app.get("/checkLimiteds/:userId", async (req, res) => {
         const response = await axios.get(url);
 
         const items = response.data.data.map(item => {
-            const itemInfo = rolimonsData[item.assetId.toString()] || [];
+            const assetIdStr = item.assetId.toString();
+            const itemInfo = rolimonsData[assetIdStr] || [];
 
             return {
                 name: item.name,
@@ -46,10 +47,11 @@ app.get("/checkLimiteds/:userId", async (req, res) => {
                 serial: item.serialNumber || null,
                 value: itemInfo[3] || null,   // Rolimons value
                 demand: itemInfo[4] || null,  // Rolimons demand
-                trend: itemInfo[5] || null    // Rolimons trend
+                trend: itemInfo[5] || null,   // Rolimons trend
+                imageUrl: `https://www.roblox.com/asset-thumbnail/image?assetId=${item.assetId}&width=420&height=420&format=png`
             };
         });
-        
+
         res.json({ success: true, items });
     } catch (error) {
         res.status(500).json({ success: false, error: "Failed to fetch data." });
@@ -57,5 +59,5 @@ app.get("/checkLimiteds/:userId", async (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+    console.log(`🚀 Server running on port ${port}`);
 });
