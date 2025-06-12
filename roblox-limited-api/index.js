@@ -10,66 +10,56 @@ app.use(cors());
 const ROLIMONS_URL = "https://www.rolimons.com/itemapi/itemdetails";
 let rolimonsData = {};
 
-// Rolimons value mappings
-const items = response.data.data.map(item => {
-    const assetIdStr = item.assetId.toString();
-    const itemInfo = rolimonsData[assetIdStr] || [];
-
-    // Declare maps inside the loop or outside (either works)
-    const demandMap = ["Terrible", "Low", "Normal", "High", "Amazing"];
-    const trendMap = ["Lowering", "Stable", "Rising", "Fluctuating", "Projecting"];
-
-// Fetch Rolimons data once when server starts
+// Fetch Rolimons data on startup
 axios.get(ROLIMONS_URL)
-  .then(res => {
-    rolimonsData = res.data.items;
-    console.log("✅ Rolimons data loaded");
-  })
-  .catch(err => {
-    console.error("❌ Failed to fetch Rolimons data:", err.message);
-  });
+    .then(res => {
+        rolimonsData = res.data.items;
+        console.log("✅ Rolimons data loaded");
+    })
+    .catch(err => {
+        console.error("❌ Failed to fetch Rolimons data:", err.message);
+    });
 
 app.get("/", (req, res) => {
-  res.send("Roblox Limited API is running!");
+    res.send("Roblox Limited API is running!");
 });
 
 app.get("/checkLimiteds/:userId", async (req, res) => {
-  const userId = req.params.userId;
+    const userId = req.params.userId;
 
-  // Ensure Rolimons data is ready
-  if (Object.keys(rolimonsData).length === 0) {
-    return res.status(503).json({ success: false, error: "Rolimons data not loaded yet." });
-  }
+    if (Object.keys(rolimonsData).length === 0) {
+        return res.status(503).json({ success: false, error: "Rolimons data not loaded yet." });
+    }
 
-  try {
-    const url = `https://inventory.roblox.com/v1/users/${userId}/assets/collectibles?limit=100&sortOrder=Asc`;
-    const response = await axios.get(url);
+    try {
+        const url = `https://inventory.roblox.com/v1/users/${userId}/assets/collectibles?limit=100&sortOrder=Asc`;
+        const response = await axios.get(url);
 
-    const items = response.data.data.map(item => {
-      const assetIdStr = item.assetId.toString();
-      const itemInfo = rolimonsData[assetIdStr] || [];
+        const demandMap = ["Terrible", "Low", "Normal", "High", "Amazing"];
+        const trendMap = ["Lowering", "Stable", "Rising", "Fluctuating", "Projecting"];
 
-      const rawDemand = itemInfo[4]?.toString() || "-1";
-      const rawTrend = itemInfo[5]?.toString() || "-1";
+        const items = response.data.data.map(item => {
+            const assetIdStr = item.assetId.toString();
+            const itemInfo = rolimonsData[assetIdStr] || [];
 
-      return {
-        name: item.name,
-        id: item.assetId,
-        rap: item.recentAveragePrice,
-        serial: item.serialNumber || null,
-        value: itemInfo[3] || -1,
-        demand: demandMap[itemInfo[4]] || "N/A",
-        trend: trendMap[itemInfo[5]] || "N/A",
-        imageUrl: `https://www.roblox.com/asset-thumbnail/image?assetId=${item.assetId}&width=420&height=420&format=png`
-      };
-    });
+            return {
+                name: item.name,
+                id: item.assetId,
+                rap: item.recentAveragePrice,
+                serial: item.serialNumber || null,
+                value: itemInfo[3] || null,
+                demand: demandMap[itemInfo[4]] || "N/A",
+                trend: trendMap[itemInfo[5]] || "N/A",
+                imageUrl: `https://www.roblox.com/asset-thumbnail/image?assetId=${item.assetId}&width=420&height=420&format=png`
+            };
+        });
 
-    res.json({ success: true, items });
-  } catch (error) {
-    res.status(500).json({ success: false, error: "Failed to fetch data." });
-  }
+        res.json({ success: true, items });
+    } catch (error) {
+        res.status(500).json({ success: false, error: "Failed to fetch data." });
+    }
 });
 
 app.listen(port, () => {
-  console.log(`🚀 Server running on port ${port}`);
+    console.log(`🚀 Server running on port ${port}`);
 });
