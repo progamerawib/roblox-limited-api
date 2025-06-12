@@ -1,3 +1,7 @@
+ChatGPT said:
+js
+Copy
+Edit
 const express = require("express");
 const axios = require("axios");
 const cors = require("cors");
@@ -35,21 +39,27 @@ app.get("/checkLimiteds/:userId", async (req, res) => {
         const url = `https://inventory.roblox.com/v1/users/${userId}/assets/collectibles?limit=100&sortOrder=Asc`;
         const response = await axios.get(url);
 
-        const demandMap = ["Terrible", "Low", "Normal", "High", "Amazing"];
-        const trendMap = ["Lowering", "Stable", "Rising", "Fluctuating", "Projecting"];
+        // Rolimons mappings
+        const demandMap = ["N/A", "Low", "Normal", "High", "Amazing"];
+        const trendMap  = ["N/A", "Lowering", "Stable", "Rising", "Fluctuating"];
 
         const items = response.data.data.map(item => {
-            const assetIdStr = item.assetId.toString();
-            const itemInfo = rolimonsData[assetIdStr] || [];
+            const info = rolimonsData[item.assetId.toString()] || [];
 
             return {
-                name: item.name,
-                id: item.assetId,
-                rap: item.recentAveragePrice,
+                name:   item.name,
+                id:     item.assetId,
+                rap:    item.recentAveragePrice,
                 serial: item.serialNumber || null,
-                value: itemInfo[3] || null,
-                demand: demandMap[itemInfo[4]] || "N/A",
-                trend: trendMap[itemInfo[5]] || "N/A",
+                value:  info[3] != null ? info[3] : null,
+                // Rolimons demand is at index 5
+                demand: info[5] != null
+                    ? demandMap[info[5]] 
+                    : "N/A",
+                // Rolimons trend is at index 6
+                trend: info[6] != null
+                    ? trendMap[info[6]] 
+                    : "N/A",
                 imageUrl: `https://www.roblox.com/asset-thumbnail/image?assetId=${item.assetId}&width=420&height=420&format=png`
             };
         });
